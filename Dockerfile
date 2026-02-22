@@ -25,17 +25,17 @@ RUN touch uv.lock
 COPY uv.lock* ./
 RUN uv sync --no-dev --no-install-project
 
+# Pre-download the cross-encoder reranker model at build time so there is
+# no HuggingFace network call at container startup.
+# Moved BEFORE source copy to cache this layer when code changes.
+RUN uv run --no-sync python -c "\
+from sentence_transformers import CrossEncoder; \
+CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
+
 # Pass 2 — install the project itself (invalidated only when source changes)
 COPY README.md ./
 COPY app/ ./app/
 RUN uv sync --no-dev
-
-# Pre-download the cross-encoder reranker model at build time so there is
-# no HuggingFace network call at container startup.
-RUN uv run python -c "\
-from sentence_transformers import CrossEncoder; \
-CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
-
 
 # ============================================================
 # Stage 2: Runtime — lean image with only what is needed
@@ -60,11 +60,12 @@ COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
 COPY --from=builder --chown=appuser:appuser /app/app /app/app
 
 # Copy the pre-downloaded HuggingFace model cache
-COPY --from=builder --chown=appuser:appuser /root/.cache /home/appuser/.cache
+COPY --from=builder --chown=appuser:appuser /root/.cache/huggingface /home/appuser/.cache/huggingface
 
 # Ensure the venv's Python/scripts are on PATH
 ENV PATH="/app/.venv/bin:$PATH" \
-    HF_HOME="/home/appuser/.cache/huggingface"
+    HF_HOME="/home/appuser/.cache/huggingface" \
+    UPLOAD_DIR="/var/app/uploads"
 
 # Create uploads directory (ephemeral — vectors persist in Qdrant Cloud)
 RUN mkdir -p /var/app/uploads && chown appuser:appuser /var/app/uploads
