@@ -7,7 +7,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: crag-rag-app
-  EB_APP_NAME: crag-rag-appp
+  EB_APP_NAME: crag-rag-app
   EB_ENV_NAME: crag-rag-prod
 
 jobs:
@@ -43,10 +43,13 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+          VOYAGE_MODEL: ${{ secrets.VOYAGE_MODEL }}
+          RERANKER_BACKEND: ${{ secrets.RERANKER_BACKEND }}
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
-          RERANKER_BACKEND: ${{ secrets.RERANKER_BACKEND }}
           UPLOAD_DIR: ${{ secrets.UPLOAD_DIR }}
+
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           S3_BUCKET="elasticbeanstalk-${AWS_REGION}-${ACCOUNT_ID}"

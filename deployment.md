@@ -67,7 +67,9 @@ aws ecr get-login-password --region $AWS_REGION | \
     $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
 # Build for linux/amd64 (required on Apple Silicon M1/M2/M3)
-docker build --platform linux/amd64 -t $ECR_REPO:latest .
+docker build --platform linux/amd64 -t $ECR_REPO:latest . # Don't use --platform linux/amd64 on windows
+# View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/rm1tknleh4x5brbvfvt2q58ql
+#   View a summary of image vulnerabilities and recommendations → docker scout quickview
 
 # Tag and push
 docker tag $ECR_REPO:latest $ECR_IMAGE
@@ -145,6 +147,7 @@ This creates `.elasticbeanstalk/config.yml` (already gitignored).
 
 ```bash
 # Single-instance mode (no load balancer — simplest, ~$62/mo)
+# or t3.medium
 eb create crag-rag-prod \
     --instance-type t3.large \
     --single
@@ -266,7 +269,7 @@ open http://<your-env>.elasticbeanstalk.com/docs
 
 ```bash
 # 1. Rebuild and push updated image to ECR
-docker build --platform linux/amd64 -t $ECR_REPO:latest .
+docker build --platform linux/amd64 -t $ECR_REPO:latest .   # Don't use --platform linux/amd64 on windows
 docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
 
 # 2. Re-deploy (Beanstalk re-pulls :latest from ECR)
@@ -298,7 +301,7 @@ All prices are for `us-east-1`, on-demand, single-instance mode.
 eb terminate crag-rag-prod
 
 # Nuke everything — delete the EB application entirely
-eb terminate --all
+eb terminate --all --force
 
 # Delete the ECR repository
 aws ecr delete-repository \
