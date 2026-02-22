@@ -45,7 +45,6 @@ jobs:
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
           VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
           VOYAGE_MODEL: ${{ secrets.VOYAGE_MODEL }}
-          RERANKER_BACKEND: ${{ secrets.RERANKER_BACKEND }}
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
           UPLOAD_DIR: ${{ secrets.UPLOAD_DIR }}
