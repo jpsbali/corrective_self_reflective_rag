@@ -68,7 +68,7 @@ jobs:
           python3 -c "
           import json, os
           ns = 'aws:elasticbeanstalk:application:environment'
-          keys = ['OPENAI_API_KEY', 'TAVILY_API_KEY', 'VOYAGE_API_KEY', 'VOYAGE_MODEL', 'RERANKER_BACKEND', QDRANT_URL', 'QDRANT_API_KEY', 'UPLOAD_DIR']
+          keys = ['OPENAI_API_KEY', 'TAVILY_API_KEY', 'VOYAGE_API_KEY', 'VOYAGE_MODEL', 'RERANKER_BACKEND', 'QDRANT_URL', 'QDRANT_API_KEY', 'UPLOAD_DIR']
           settings = [{'Namespace': ns, 'OptionName': k, 'Value': os.environ[k]} for k in keys]
           print(json.dumps(settings))
           " > /tmp/eb-env-settings.json
